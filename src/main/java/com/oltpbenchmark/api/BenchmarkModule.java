@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import org.postgresql.PGProperty;
 
 /**
  * Base class for all benchmark implementations
@@ -80,8 +81,11 @@ public abstract class BenchmarkModule {
 
     public final Connection makeConnection() throws SQLException {
 
+        Properties properties = new Properties();
+        PGProperty.OPTIONS.set(properties, "-c synchronous_commit=off");
+
         if (StringUtils.isEmpty(workConf.getUsername())) {
-            return DriverManager.getConnection(workConf.getUrl());
+            return DriverManager.getConnection(workConf.getUrl(), properties);
         } else {
             return DriverManager.getConnection(
                     workConf.getUrl(),
