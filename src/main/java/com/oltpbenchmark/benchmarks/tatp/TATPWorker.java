@@ -170,7 +170,7 @@ public class TATPWorker extends Worker<TATPBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException {
         Transaction t = Transaction.get(txnType.getName());
 
 
@@ -180,7 +180,7 @@ public class TATPWorker extends Worker<TATPBenchmark> {
             LOG.debug("Executing {}", proc);
         }
 
-        t.invoke(conn, proc, subscriberSize);
+        t.invoke(safeConn, proc, subscriberSize);
         return (TransactionStatus.SUCCESS);
     }
 

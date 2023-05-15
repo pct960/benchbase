@@ -35,7 +35,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
-import org.postgresql.PGProperty;
 
 /**
  * Base class for all benchmark implementations
@@ -79,13 +78,27 @@ public abstract class BenchmarkModule {
     // DATABASE CONNECTION
     // --------------------------------------------------------------------------
 
-    public final Connection makeConnection() throws SQLException {
+    public final Connection makeFastConnection() throws SQLException {
 
         Properties properties = new Properties();
-        PGProperty.OPTIONS.set(properties, "-c synchronous_commit=off");
+        properties.setProperty("options", "-c synchronous_commit=off");
 
         if (StringUtils.isEmpty(workConf.getUsername())) {
             return DriverManager.getConnection(workConf.getUrl(), properties);
+        } else {
+            StringBuilder dbUrl = new StringBuilder(workConf.getUrl());
+            dbUrl.append("&options=-c%20synchronous_commit=off"); 
+            return DriverManager.getConnection(
+                    dbUrl.toString(),
+                    workConf.getUsername(),
+                    workConf.getPassword());
+        }
+    }
+
+    public final Connection makeSafeConnection() throws SQLException {
+
+        if (StringUtils.isEmpty(workConf.getUsername())) {
+            return DriverManager.getConnection(workConf.getUrl());
         } else {
             return DriverManager.getConnection(
                     workConf.getUrl(),
@@ -201,7 +214,7 @@ public abstract class BenchmarkModule {
                 LOG.error(throwables.getMessage(), throwables);
             }
         }
-        try (Connection conn = this.makeConnection()) {
+        try (Connection conn = this.makeSafeConnection()) {
             this.catalog = SQLUtil.getCatalog(this, this.getWorkloadConfiguration().getDatabaseType(), conn);
         }
     }
@@ -212,7 +225,7 @@ public abstract class BenchmarkModule {
      * objects (e.g., table, indexes, etc) needed for this benchmark
      */
     public final void createDatabase() throws SQLException, IOException {
-        try (Connection conn = this.makeConnection()) {
+        try (Connection conn = this.makeSafeConnection()) {
             this.createDatabase(this.workConf.getDatabaseType(), conn);
         }
     }
@@ -270,7 +283,7 @@ public abstract class BenchmarkModule {
 
     public final void clearDatabase() throws SQLException {
 
-        try (Connection conn = this.makeConnection()) {
+        try (Connection conn = this.makeSafeConnection()) {
             Loader<? extends BenchmarkModule> loader = this.makeLoaderImpl();
             if (loader != null) {
                 conn.setAutoCommit(false);

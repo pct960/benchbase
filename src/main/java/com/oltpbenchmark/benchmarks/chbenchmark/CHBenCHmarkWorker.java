@@ -32,10 +32,10 @@ public class CHBenCHmarkWorker extends Worker<CHBenCHmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTransaction) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTransaction) throws UserAbortException, SQLException {
         try {
             GenericQuery proc = (GenericQuery) this.getProcedure(nextTransaction.getProcedureClass());
-            proc.run(conn);
+            proc.run(safeConn);
         } catch (ClassCastException e) {
             throw new RuntimeException(e);
         }

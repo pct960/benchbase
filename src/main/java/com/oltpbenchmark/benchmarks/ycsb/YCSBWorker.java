@@ -80,21 +80,21 @@ class YCSBWorker extends Worker<YCSBBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException, SQLException {
         Class<? extends Procedure> procClass = nextTrans.getProcedureClass();
 
         if (procClass.equals(DeleteRecord.class)) {
-            deleteRecord(conn);
+            deleteRecord(safeConn);
         } else if (procClass.equals(InsertRecord.class)) {
-            insertRecord(conn);
+            insertRecord(safeConn);
         } else if (procClass.equals(ReadModifyWriteRecord.class)) {
-            readModifyWriteRecord(conn);
+            readModifyWriteRecord(safeConn);
         } else if (procClass.equals(ReadRecord.class)) {
-            readRecord(conn);
+            readRecord(safeConn);
         } else if (procClass.equals(ScanRecord.class)) {
-            scanRecord(conn);
+            scanRecord(safeConn);
         } else if (procClass.equals(UpdateRecord.class)) {
-            updateRecord(conn);
+            updateRecord(safeConn);
         }
         return (TransactionStatus.SUCCESS);
     }

@@ -50,7 +50,8 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
 
     private final int id;
     private final T benchmark;
-    protected Connection conn = null;
+    protected Connection fastConn = null;
+    protected Connection safeConn = null;
     protected final WorkloadConfiguration configuration;
     protected final TransactionTypes transactionTypes;
     protected final Map<TransactionType, Procedure> procedures = new HashMap<>();
@@ -76,9 +77,13 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
 
         if (!this.configuration.getNewConnectionPerTxn()) {
             try {
-                this.conn = this.benchmark.makeConnection();
-                this.conn.setAutoCommit(false);
-                this.conn.setTransactionIsolation(this.configuration.getIsolationMode());
+                this.fastConn = this.benchmark.makeFastConnection();
+                this.fastConn.setAutoCommit(false);
+                this.fastConn.setTransactionIsolation(this.configuration.getIsolationMode());
+                
+                this.safeConn = this.benchmark.makeSafeConnection();
+                this.safeConn.setAutoCommit(false);
+                this.safeConn.setTransactionIsolation(this.configuration.getIsolationMode());
             } catch (SQLException ex) {
                 throw new RuntimeException("Failed to connect to database", ex);
             }
@@ -393,11 +398,15 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
 
                 TransactionStatus status = TransactionStatus.UNKNOWN;
 
-                if (this.conn == null) {
+                if (this.fastConn == null || this.safeConn == null) {
                     try {
-                        this.conn = this.benchmark.makeConnection();
-                        this.conn.setAutoCommit(false);
-                        this.conn.setTransactionIsolation(this.configuration.getIsolationMode());
+                        this.fastConn = this.benchmark.makeFastConnection();
+                        this.fastConn.setAutoCommit(false);
+                        this.fastConn.setTransactionIsolation(this.configuration.getIsolationMode());
+                
+                        this.safeConn = this.benchmark.makeSafeConnection();
+                        this.safeConn.setAutoCommit(false);
+                        this.safeConn.setTransactionIsolation(this.configuration.getIsolationMode());
                     } catch (SQLException ex) {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug(String.format("%s failed to open a connection...", this));
@@ -413,7 +422,7 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
                         LOG.debug(String.format("%s %s attempting...", this, transactionType));
                     }
 
-                    status = this.executeWork(conn, transactionType);
+                    status = this.executeWork(safeConn, fastConn, transactionType);
 
                     if (LOG.isDebugEnabled()) {
                         LOG.debug(String.format("%s %s completed with status [%s]...", this, transactionType, status.name()));
@@ -423,12 +432,14 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
                         LOG.debug(String.format("%s %s committing...", this, transactionType));
                     }
 
-                    conn.commit();
+                    safeConn.commit();
+                    fastConn.commit();
 
                     break;
 
                 } catch (UserAbortException ex) {
-                    conn.rollback();
+                    safeConn.rollback();
+                    fastConn.rollback();
 
                     ABORT_LOG.debug(String.format("%s Aborted", transactionType), ex);
 
@@ -437,7 +448,8 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
                     break;
 
                 } catch (SQLException ex) {
-                    conn.rollback();
+                    safeConn.rollback();
+                    fastConn.rollback();
 
                     if (isRetryable(ex)) {
                         LOG.debug(String.format("Retryable SQLException occurred during [%s]... current retry attempt [%d], max retry attempts [%d], sql state [%s], error code [%d].", transactionType, retryCount, maxRetryCount, ex.getSQLState(), ex.getErrorCode()), ex);
@@ -454,10 +466,13 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
                     }
 
                 } finally {
-                    if (this.configuration.getNewConnectionPerTxn() && this.conn != null) {
+                    if (this.configuration.getNewConnectionPerTxn() && this.safeConn != null && this.fastConn != null) {
                         try {
-                            this.conn.close();
-                            this.conn = null;
+                            this.safeConn.close();
+                            this.safeConn = null;
+
+                            this.fastConn.close();
+                            this.fastConn = null;
                         } catch (SQLException e) {
                             LOG.error("Connection couldn't be closed.", e);
                         }
@@ -529,15 +544,16 @@ public abstract class Worker<T extends BenchmarkModule> implements Runnable {
      * @throws UserAbortException TODO
      * @throws SQLException       TODO
      */
-    protected abstract TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException;
+    protected abstract TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException;
 
     /**
      * Called at the end of the test to do any clean up that may be required.
      */
     public void tearDown() {
-        if (!this.configuration.getNewConnectionPerTxn() && this.conn != null) {
+        if (!this.configuration.getNewConnectionPerTxn() && this.safeConn != null && this.fastConn != null) {
             try {
-                conn.close();
+                safeConn.close();
+                fastConn.close();
             } catch (SQLException e) {
                 LOG.error("Connection couldn't be closed.", e);
             }

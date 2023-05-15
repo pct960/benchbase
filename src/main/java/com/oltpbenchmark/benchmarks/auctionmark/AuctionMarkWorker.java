@@ -88,7 +88,7 @@ public class AuctionMarkWorker extends Worker<AuctionMarkBenchmark> {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug(String.format("Executing %s in separate thread", txnType));
                     }
-                    try (Connection conn = getBenchmark().makeConnection()) {
+                    try (Connection conn = getBenchmark().makeSafeConnection()) {
                         executeCloseAuctions(conn, (CloseAuctions) proc);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
@@ -304,7 +304,7 @@ public class AuctionMarkWorker extends Worker<AuctionMarkBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException {
         // We need to subtract the different between this and the profile's start time,
         // since that accounts for the time gap between when the loader started and when the client start.
         // Otherwise, all of our cache date will be out dated if it took a really long time
@@ -347,34 +347,34 @@ public class AuctionMarkWorker extends Worker<AuctionMarkBenchmark> {
         boolean ret = false;
         switch (txn) {
             case CloseAuctions:
-                ret = executeCloseAuctions(conn, (CloseAuctions) proc);
+                ret = executeCloseAuctions(safeConn, (CloseAuctions) proc);
                 break;
             case GetItem:
-                ret = executeGetItem(conn, (GetItem) proc);
+                ret = executeGetItem(safeConn, (GetItem) proc);
                 break;
             case GetUserInfo:
-                ret = executeGetUserInfo(conn, (GetUserInfo) proc);
+                ret = executeGetUserInfo(safeConn, (GetUserInfo) proc);
                 break;
             case NewBid:
-                ret = executeNewBid(conn, (NewBid) proc);
+                ret = executeNewBid(fastConn, (NewBid) proc);
                 break;
             case NewComment:
-                ret = executeNewComment(conn, (NewComment) proc);
+                ret = executeNewComment(safeConn, (NewComment) proc);
                 break;
             case NewCommentResponse:
-                ret = executeNewCommentResponse(conn, (NewCommentResponse) proc);
+                ret = executeNewCommentResponse(safeConn, (NewCommentResponse) proc);
                 break;
             case NewFeedback:
-                ret = executeNewFeedback(conn, (NewFeedback) proc);
+                ret = executeNewFeedback(safeConn, (NewFeedback) proc);
                 break;
             case NewItem:
-                ret = executeNewItem(conn, (NewItem) proc);
+                ret = executeNewItem(safeConn, (NewItem) proc);
                 break;
             case NewPurchase:
-                ret = executeNewPurchase(conn, (NewPurchase) proc);
+                ret = executeNewPurchase(safeConn, (NewPurchase) proc);
                 break;
             case UpdateItem:
-                ret = executeUpdateItem(conn, (UpdateItem) proc);
+                ret = executeUpdateItem(safeConn, (UpdateItem) proc);
                 break;
             default:
 

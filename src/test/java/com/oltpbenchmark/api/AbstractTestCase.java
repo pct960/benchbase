@@ -56,7 +56,8 @@ public abstract class AbstractTestCase<T extends BenchmarkModule> extends TestCa
     protected WorkloadConfiguration workConf;
     protected T benchmark;
     protected AbstractCatalog catalog;
-    protected Connection conn;
+    protected Connection safeConn;
+    protected Connection fastConn;
 
     protected final boolean createDatabase;
     protected final boolean loadDatabase;
@@ -129,8 +130,10 @@ public abstract class AbstractTestCase<T extends BenchmarkModule> extends TestCa
                 new Class<?>[]{WorkloadConfiguration.class});
         assertNotNull(this.benchmark);
 
-        this.conn = this.benchmark.makeConnection();
-        assertNotNull(this.conn);
+        this.safeConn = this.benchmark.makeSafeConnection();
+        this.fastConn = this.benchmark.makeFastConnection();
+        assertNotNull(this.safeConn);
+        assertNotNull(this.fastConn);
 
         this.benchmark.refreshCatalog();
         this.catalog = this.benchmark.getCatalog();
@@ -177,8 +180,9 @@ public abstract class AbstractTestCase<T extends BenchmarkModule> extends TestCa
     @Override
     protected final void tearDown() throws Exception {
 
-        if (this.conn != null) {
-            this.conn.close();
+        if (this.safeConn != null && this.fastConn!= null) {
+            this.safeConn.close();
+            this.fastConn.close();
         }
 
         cleanupServer();

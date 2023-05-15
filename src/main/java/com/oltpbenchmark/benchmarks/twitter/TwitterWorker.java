@@ -49,23 +49,23 @@ public class TwitterWorker extends Worker<TwitterBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException, SQLException {
         TwitterOperation t = generator.nextTransaction();
         // zero is an invalid id, so fixing random here to be atleast 1
         t.uid = this.rng().nextInt(this.num_users - 1 ) + 1;
 
         if (nextTrans.getProcedureClass().equals(GetTweet.class)) {
-            doSelect1Tweet(conn, t.tweetid);
+            doSelect1Tweet(safeConn, t.tweetid);
         } else if (nextTrans.getProcedureClass().equals(GetTweetsFromFollowing.class)) {
-            doSelectTweetsFromPplIFollow(conn, t.uid);
+            doSelectTweetsFromPplIFollow(safeConn, t.uid);
         } else if (nextTrans.getProcedureClass().equals(GetFollowers.class)) {
-            doSelectNamesOfPplThatFollowMe(conn, t.uid);
+            doSelectNamesOfPplThatFollowMe(safeConn, t.uid);
         } else if (nextTrans.getProcedureClass().equals(GetUserTweets.class)) {
-            doSelectTweetsForUid(conn, t.uid);
+            doSelectTweetsForUid(safeConn, t.uid);
         } else if (nextTrans.getProcedureClass().equals(InsertTweet.class)) {
             int len = this.tweet_len_rng.nextValue();
             String text = TextGenerator.randomStr(this.rng(), len);
-            doInsertTweet(conn, t.uid, text);
+            doInsertTweet(safeConn, t.uid, text);
         }
         return (TransactionStatus.SUCCESS);
     }

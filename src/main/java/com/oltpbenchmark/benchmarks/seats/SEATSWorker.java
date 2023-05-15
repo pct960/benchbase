@@ -268,7 +268,7 @@ public class SEATSWorker extends Worker<SEATSBenchmark> {
 
         // Fire off a FindOpenSeats so that we can prime ourselves
         FindOpenSeats proc = this.getProcedure(FindOpenSeats.class);
-        try (Connection conn = getBenchmark().makeConnection()) {
+        try (Connection conn = getBenchmark().makeSafeConnection()) {
             boolean ret = this.executeFindOpenSeats(conn, proc);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
@@ -280,7 +280,7 @@ public class SEATSWorker extends Worker<SEATSBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException {
         Transaction txn = Transaction.get(txnType.getName());
 
 
@@ -293,27 +293,27 @@ public class SEATSWorker extends Worker<SEATSBenchmark> {
         try {
             switch (txn) {
                 case DeleteReservation: {
-                    ret = this.executeDeleteReservation(conn, (DeleteReservation) proc);
+                    ret = this.executeDeleteReservation(safeConn, (DeleteReservation) proc);
                     break;
                 }
                 case FindFlights: {
-                    ret = this.executeFindFlights(conn, (FindFlights) proc);
+                    ret = this.executeFindFlights(safeConn, (FindFlights) proc);
                     break;
                 }
                 case FindOpenSeats: {
-                    ret = this.executeFindOpenSeats(conn, (FindOpenSeats) proc);
+                    ret = this.executeFindOpenSeats(safeConn, (FindOpenSeats) proc);
                     break;
                 }
                 case NewReservation: {
-                    ret = this.executeNewReservation(conn, (NewReservation) proc);
+                    ret = this.executeNewReservation(safeConn, (NewReservation) proc);
                     break;
                 }
                 case UpdateCustomer: {
-                    ret = this.executeUpdateCustomer(conn, (UpdateCustomer) proc);
+                    ret = this.executeUpdateCustomer(safeConn, (UpdateCustomer) proc);
                     break;
                 }
                 case UpdateReservation: {
-                    ret = this.executeUpdateReservation(conn, (UpdateReservation) proc);
+                    ret = this.executeUpdateReservation(safeConn, (UpdateReservation) proc);
                     break;
                 }
                 default:

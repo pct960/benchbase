@@ -51,7 +51,7 @@ public class WikipediaWorker extends Worker<WikipediaBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTransaction) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTransaction) throws UserAbortException, SQLException {
         Flat z_users = new Flat(this.rng(), 1, this.getBenchmark().num_users);
         Zipf z_pages = new Zipf(this.rng(), 1, this.getBenchmark().num_pages, WikipediaConstants.USER_ID_SIGMA);
 
@@ -91,25 +91,25 @@ public class WikipediaWorker extends Worker<WikipediaBenchmark> {
         try {
             if (procClass.equals(AddWatchList.class)) {
 
-                this.addToWatchlist(conn, userId, nameSpace, pageTitle);
+                this.addToWatchlist(safeConn, userId, nameSpace, pageTitle);
             }
             // RemoveWatchList
             else if (procClass.equals(RemoveWatchList.class)) {
 
-                this.removeFromWatchlist(conn, userId, nameSpace, pageTitle);
+                this.removeFromWatchlist(safeConn, userId, nameSpace, pageTitle);
             }
             // UpdatePage
             else if (procClass.equals(UpdatePage.class)) {
-                this.updatePage(conn, this.generateUserIP(), userId, nameSpace, pageTitle);
+                this.updatePage(safeConn, this.generateUserIP(), userId, nameSpace, pageTitle);
             }
             // GetPageAnonymous
             else if (procClass.equals(GetPageAnonymous.class)) {
-                this.getPageAnonymous(conn, true, this.generateUserIP(), nameSpace, pageTitle);
+                this.getPageAnonymous(safeConn, true, this.generateUserIP(), nameSpace, pageTitle);
             }
             // GetPageAuthenticated
             else if (procClass.equals(GetPageAuthenticated.class)) {
 
-                this.getPageAuthenticated(conn, true, this.generateUserIP(), userId, nameSpace, pageTitle);
+                this.getPageAuthenticated(safeConn, true, this.generateUserIP(), userId, nameSpace, pageTitle);
             }
         } catch (SQLException esql) {
             LOG.error("Caught SQL Exception in WikipediaWorker for procedure{}:{}", procClass.getName(), esql, esql);

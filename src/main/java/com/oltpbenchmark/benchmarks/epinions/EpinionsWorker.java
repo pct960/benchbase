@@ -47,25 +47,25 @@ public class EpinionsWorker extends Worker<EpinionsBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException, SQLException {
         if (nextTrans.getProcedureClass().equals(GetReviewItemById.class)) {
-            reviewItemByID(conn);
+            reviewItemByID(safeConn);
         } else if (nextTrans.getProcedureClass().equals(GetReviewsByUser.class)) {
-            reviewsByUser(conn);
+            reviewsByUser(safeConn);
         } else if (nextTrans.getProcedureClass().equals(GetAverageRatingByTrustedUser.class)) {
-            averageRatingByTrustedUser(conn);
+            averageRatingByTrustedUser(safeConn);
         } else if (nextTrans.getProcedureClass().equals(GetItemAverageRating.class)) {
-            averageRatingOfItem(conn);
+            averageRatingOfItem(safeConn);
         } else if (nextTrans.getProcedureClass().equals(GetItemReviewsByTrustedUser.class)) {
-            itemReviewsByTrustedUser(conn);
+            itemReviewsByTrustedUser(safeConn);
         } else if (nextTrans.getProcedureClass().equals(UpdateUserName.class)) {
-            updateUserName(conn);
+            updateUserName(safeConn);
         } else if (nextTrans.getProcedureClass().equals(UpdateItemTitle.class)) {
-            updateItemTitle(conn);
+            updateItemTitle(safeConn);
         } else if (nextTrans.getProcedureClass().equals(UpdateReviewRating.class)) {
-            updateReviewRating(conn);
+            updateReviewRating(safeConn);
         } else if (nextTrans.getProcedureClass().equals(UpdateTrustRating.class)) {
-            updateTrustRating(conn);
+            updateTrustRating(safeConn);
         }
         return (TransactionStatus.SUCCESS);
     }

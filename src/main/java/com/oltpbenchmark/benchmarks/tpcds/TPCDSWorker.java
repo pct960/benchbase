@@ -30,7 +30,7 @@ public class TPCDSWorker extends Worker<TPCDSBenchmark> {
         super(benchmarkModule, id);
     }
 
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws Procedure.UserAbortException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws Procedure.UserAbortException {
         return null;
     }
 }

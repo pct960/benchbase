@@ -65,7 +65,7 @@ public abstract class AbstractTestLoader<T extends BenchmarkModule> extends Abst
 
             String sql = SQLUtil.getCountSQL(this.workConf.getDatabaseType(), catalog_tbl);
 
-            try (Statement stmt = conn.createStatement();
+            try (Statement stmt = safeConn.createStatement();
                  ResultSet result = stmt.executeQuery(sql);) {
 
                 assertNotNull(result);

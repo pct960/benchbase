@@ -69,7 +69,8 @@ public abstract class AbstractTestWorker<T extends BenchmarkModule> extends Abst
         Worker<?> w = workers.get(0);
         assertNotNull(w);
         w.initialize();
-        assertFalse(this.conn.isReadOnly());
+        assertFalse(this.safeConn.isReadOnly());
+        assertFalse(this.fastConn.isReadOnly());
         for (TransactionType txnType : this.workConf.getTransTypes()) {
             if (txnType.isSupplemental()) {
                 continue;
@@ -80,7 +81,7 @@ public abstract class AbstractTestWorker<T extends BenchmarkModule> extends Abst
             try {
                 LOG.info("starting execution of [{}]", txnType);
                 sw.start();
-                w.executeWork(this.conn, txnType);
+                w.executeWork(this.safeConn, this.fastConn, txnType);
                 sw.stop();
 
 

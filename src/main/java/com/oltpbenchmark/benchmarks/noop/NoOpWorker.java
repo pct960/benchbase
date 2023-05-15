@@ -42,11 +42,11 @@ public class NoOpWorker extends Worker<NoOpBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException {
 
         LOG.debug("Executing {}", this.procNoOp);
         try {
-            this.procNoOp.run(conn);
+            this.procNoOp.run(safeConn);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Successfully completed {} execution!", this.procNoOp);
             }

@@ -51,69 +51,69 @@ public class HYADAPTWorker extends Worker<HYADAPTBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException, SQLException {
         Class<? extends Procedure> procClass = nextTrans.getProcedureClass();
 
         if (procClass.equals(ReadRecord1.class)) {
-            readRecord1(conn);
+            readRecord1(safeConn);
         } else if (procClass.equals(ReadRecord2.class)) {
-            readRecord2(conn);
+            readRecord2(safeConn);
         } else if (procClass.equals(ReadRecord3.class)) {
-            readRecord3(conn);
+            readRecord3(safeConn);
         } else if (procClass.equals(ReadRecord4.class)) {
-            readRecord4(conn);
+            readRecord4(safeConn);
         } else if (procClass.equals(ReadRecord5.class)) {
-            readRecord5(conn);
+            readRecord5(safeConn);
         } else if (procClass.equals(ReadRecord6.class)) {
-            readRecord6(conn);
+            readRecord6(safeConn);
         } else if (procClass.equals(ReadRecord7.class)) {
-            readRecord7(conn);
+            readRecord7(safeConn);
         } else if (procClass.equals(ReadRecord8.class)) {
-            readRecord8(conn);
+            readRecord8(safeConn);
         } else if (procClass.equals(ReadRecord9.class)) {
-            readRecord9(conn);
+            readRecord9(safeConn);
         } else if (procClass.equals(ReadRecord10.class)) {
-            readRecord10(conn);
+            readRecord10(safeConn);
         } else if (procClass.equals(MaxRecord1.class)) {
-            maxRecord1(conn);
+            maxRecord1(safeConn);
         } else if (procClass.equals(MaxRecord2.class)) {
-            maxRecord2(conn);
+            maxRecord2(safeConn);
         } else if (procClass.equals(MaxRecord3.class)) {
-            maxRecord3(conn);
+            maxRecord3(safeConn);
         } else if (procClass.equals(MaxRecord4.class)) {
-            maxRecord4(conn);
+            maxRecord4(safeConn);
         } else if (procClass.equals(MaxRecord5.class)) {
-            maxRecord5(conn);
+            maxRecord5(safeConn);
         } else if (procClass.equals(MaxRecord6.class)) {
-            maxRecord6(conn);
+            maxRecord6(safeConn);
         } else if (procClass.equals(MaxRecord7.class)) {
-            maxRecord7(conn);
+            maxRecord7(safeConn);
         } else if (procClass.equals(MaxRecord8.class)) {
-            maxRecord8(conn);
+            maxRecord8(safeConn);
         } else if (procClass.equals(MaxRecord9.class)) {
-            maxRecord9(conn);
+            maxRecord9(safeConn);
         } else if (procClass.equals(MaxRecord10.class)) {
-            maxRecord10(conn);
+            maxRecord10(safeConn);
         } else if (procClass.equals(SumRecord1.class)) {
-            sumRecord1(conn);
+            sumRecord1(safeConn);
         } else if (procClass.equals(SumRecord2.class)) {
-            sumRecord2(conn);
+            sumRecord2(safeConn);
         } else if (procClass.equals(SumRecord3.class)) {
-            sumRecord3(conn);
+            sumRecord3(safeConn);
         } else if (procClass.equals(SumRecord4.class)) {
-            sumRecord4(conn);
+            sumRecord4(safeConn);
         } else if (procClass.equals(SumRecord5.class)) {
-            sumRecord5(conn);
+            sumRecord5(safeConn);
         } else if (procClass.equals(SumRecord6.class)) {
-            sumRecord6(conn);
+            sumRecord6(safeConn);
         } else if (procClass.equals(SumRecord7.class)) {
-            sumRecord7(conn);
+            sumRecord7(safeConn);
         } else if (procClass.equals(SumRecord8.class)) {
-            sumRecord8(conn);
+            sumRecord8(safeConn);
         } else if (procClass.equals(SumRecord9.class)) {
-            sumRecord9(conn);
+            sumRecord9(safeConn);
         } else if (procClass.equals(SumRecord10.class)) {
-            sumRecord10(conn);
+            sumRecord10(safeConn);
         }
 
         return (TransactionStatus.SUCCESS);

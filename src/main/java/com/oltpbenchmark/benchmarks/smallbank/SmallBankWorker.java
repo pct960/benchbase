@@ -100,42 +100,42 @@ public class SmallBankWorker extends Worker<SmallBankBenchmark> {
 
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException {
         Class<? extends Procedure> procClass = txnType.getProcedureClass();
 
         // Amalgamate
         if (procClass.equals(Amalgamate.class)) {
             this.generateCustIds(true);
-            this.procAmalgamate.run(conn, this.custIdsBuffer[0], this.custIdsBuffer[1]);
+            this.procAmalgamate.run(safeConn, this.custIdsBuffer[0], this.custIdsBuffer[1]);
 
             // Balance
         } else if (procClass.equals(Balance.class)) {
             this.generateCustIds(false);
             String custName = String.format(this.custNameFormat, this.custIdsBuffer[0]);
-            this.procBalance.run(conn, custName);
+            this.procBalance.run(safeConn, custName);
 
             // DepositChecking
         } else if (procClass.equals(DepositChecking.class)) {
             this.generateCustIds(false);
             String custName = String.format(this.custNameFormat, this.custIdsBuffer[0]);
-            this.procDepositChecking.run(conn, custName, SmallBankConstants.PARAM_DEPOSIT_CHECKING_AMOUNT);
+            this.procDepositChecking.run(safeConn, custName, SmallBankConstants.PARAM_DEPOSIT_CHECKING_AMOUNT);
 
             // SendPayment
         } else if (procClass.equals(SendPayment.class)) {
             this.generateCustIds(true);
-            this.procSendPayment.run(conn, this.custIdsBuffer[0], this.custIdsBuffer[1], SmallBankConstants.PARAM_SEND_PAYMENT_AMOUNT);
+            this.procSendPayment.run(safeConn, this.custIdsBuffer[0], this.custIdsBuffer[1], SmallBankConstants.PARAM_SEND_PAYMENT_AMOUNT);
 
             // TransactSavings
         } else if (procClass.equals(TransactSavings.class)) {
             this.generateCustIds(false);
             String custName = String.format(this.custNameFormat, this.custIdsBuffer[0]);
-            this.procTransactSavings.run(conn, custName, SmallBankConstants.PARAM_TRANSACT_SAVINGS_AMOUNT);
+            this.procTransactSavings.run(safeConn, custName, SmallBankConstants.PARAM_TRANSACT_SAVINGS_AMOUNT);
 
             // WriteCheck
         } else if (procClass.equals(WriteCheck.class)) {
             this.generateCustIds(false);
             String custName = String.format(this.custNameFormat, this.custIdsBuffer[0]);
-            this.procWriteCheck.run(conn, custName, SmallBankConstants.PARAM_WRITE_CHECK_AMOUNT);
+            this.procWriteCheck.run(safeConn, custName, SmallBankConstants.PARAM_WRITE_CHECK_AMOUNT);
 
         }
 

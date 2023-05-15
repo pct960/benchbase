@@ -64,19 +64,19 @@ public class ResourceStresserWorker extends Worker<ResourceStresserBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType nextTrans) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTrans) throws UserAbortException, SQLException {
         if (nextTrans.getProcedureClass().equals(CPU1.class)) {
-            cpu1Transaction(conn, CPU1_howManyPerTrasaction, CPU1_sleep, CPU1_nestedLevel);
+            cpu1Transaction(safeConn, CPU1_howManyPerTrasaction, CPU1_sleep, CPU1_nestedLevel);
         } else if (nextTrans.getProcedureClass().equals(CPU2.class)) {
-            cpu2Transaction(conn, CPU2_howManyPerTrasaction, CPU2_sleep, CPU2_nestedLevel);
+            cpu2Transaction(safeConn, CPU2_howManyPerTrasaction, CPU2_sleep, CPU2_nestedLevel);
         } else if (nextTrans.getProcedureClass().equals(IO1.class)) {
-            io1Transaction(conn, IO1_howManyColsPerRow, IO1_howManyRowsPerUpdate, IO1_howManyUpdatePerTransaction, keyRange);
+            io1Transaction(safeConn, IO1_howManyColsPerRow, IO1_howManyRowsPerUpdate, IO1_howManyUpdatePerTransaction, keyRange);
         } else if (nextTrans.getProcedureClass().equals(IO2.class)) {
-            io2Transaction(conn, IO2_howManyUpdatePerTransaction, IO2_makeSureWorketSetFitsInMemory, keyRange);
+            io2Transaction(safeConn, IO2_howManyUpdatePerTransaction, IO2_makeSureWorketSetFitsInMemory, keyRange);
         } else if (nextTrans.getProcedureClass().equals(Contention1.class)) {
-            contention1Transaction(conn, CONTENTION1_howManyUpdates, CONTENTION1_sleepLength);
+            contention1Transaction(safeConn, CONTENTION1_howManyUpdates, CONTENTION1_sleepLength);
         } else if (nextTrans.getProcedureClass().equals(Contention2.class)) {
-            contention2Transaction(conn, CONTENTION2_howManyKeys, CONTENTION2_howManyUpdates, CONTENTION2_sleepLength);
+            contention2Transaction(safeConn, CONTENTION2_howManyKeys, CONTENTION2_howManyUpdates, CONTENTION2_sleepLength);
         }
         return (TransactionStatus.SUCCESS);
     }

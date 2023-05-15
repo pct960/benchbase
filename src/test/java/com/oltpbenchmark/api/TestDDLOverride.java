@@ -40,7 +40,7 @@ public class TestDDLOverride extends AbstractTestCase<MockBenchmark> {
 
             String sql = SQLUtil.getCountSQL(this.workConf.getDatabaseType(), catalog_tbl);
 
-            try (Statement stmt = conn.createStatement();
+            try (Statement stmt = safeConn.createStatement();
                  ResultSet result = stmt.executeQuery(sql);) {
 
                 assertNotNull(result);

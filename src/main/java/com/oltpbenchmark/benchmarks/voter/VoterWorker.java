@@ -38,12 +38,12 @@ public class VoterWorker extends Worker<VoterBenchmark> {
     }
 
     @Override
-    protected TransactionStatus executeWork(Connection conn, TransactionType txnType) throws UserAbortException, SQLException {
+    protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType txnType) throws UserAbortException, SQLException {
 
         PhoneCall call = switchboard.receive();
         Vote proc = getProcedure(Vote.class);
 
-        proc.run(conn, call.voteId, call.phoneNumber, call.contestantNumber, VoterConstants.MAX_VOTES);
+        proc.run(safeConn, call.voteId, call.phoneNumber, call.contestantNumber, VoterConstants.MAX_VOTES);
         return TransactionStatus.SUCCESS;
     }
 
