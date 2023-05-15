@@ -87,7 +87,7 @@ public abstract class BenchmarkModule {
             return DriverManager.getConnection(workConf.getUrl(), properties);
         } else {
             StringBuilder dbUrl = new StringBuilder(workConf.getUrl());
-            dbUrl.append("&options=-c%20synchronous_commit=off"); 
+            dbUrl.append("&options=-c synchronous_commit=off"); 
             return DriverManager.getConnection(
                     dbUrl.toString(),
                     workConf.getUsername(),
