@@ -32,7 +32,8 @@ public class WorkloadConfiguration {
     private final List<Phase> phases = new ArrayList<>();
     private DatabaseType databaseType;
     private String benchmarkName;
-    private String url;
+    private String safeUrl;
+    private String fastUrl;
     private String username;
     private String password;
     private String driverClass;
@@ -76,12 +77,20 @@ public class WorkloadConfiguration {
         this.databaseType = databaseType;
     }
 
-    public String getUrl() {
-        return url;
+    public String getSafeUrl() {
+        return safeUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setSafeUrl(String url) {
+        this.safeUrl = url;
+    }
+
+    public String getFastUrl() {
+        return fastUrl;
+    }
+
+    public void setFastUrl(String url) {
+        this.fastUrl = url;
     }
 
     public String getUsername() {
@@ -328,7 +337,8 @@ public class WorkloadConfiguration {
                "phases=" + phases +
                ", databaseType=" + databaseType +
                ", benchmarkName='" + benchmarkName + '\'' +
-               ", url='" + url + '\'' +
+               ", fastUrl='" + fastUrl + '\'' +
+               ", safeUrl='" + safeUrl + '\'' +
                ", username='" + username + '\'' +
                ", password='" + password + '\'' +
                ", driverClass='" + driverClass + '\'' +

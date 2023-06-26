@@ -80,16 +80,11 @@ public abstract class BenchmarkModule {
 
     public final Connection makeFastConnection() throws SQLException {
 
-        Properties properties = new Properties();
-        properties.setProperty("options", "-c synchronous_commit=off");
-
         if (StringUtils.isEmpty(workConf.getUsername())) {
-            return DriverManager.getConnection(workConf.getUrl(), properties);
+            return DriverManager.getConnection(workConf.getFastUrl());
         } else {
-            StringBuilder dbUrl = new StringBuilder(workConf.getUrl());
-            dbUrl.append("&amp;options=-c%20synchronous_commit=off"); 
             return DriverManager.getConnection(
-                    dbUrl.toString(),
+                    workConf.getFastUrl(),
                     workConf.getUsername(),
                     workConf.getPassword());
         }
@@ -98,10 +93,10 @@ public abstract class BenchmarkModule {
     public final Connection makeSafeConnection() throws SQLException {
 
         if (StringUtils.isEmpty(workConf.getUsername())) {
-            return DriverManager.getConnection(workConf.getUrl());
+            return DriverManager.getConnection(workConf.getSafeUrl());
         } else {
             return DriverManager.getConnection(
-                    workConf.getUrl(),
+                    workConf.getSafeUrl(),
                     workConf.getUsername(),
                     workConf.getPassword());
         }
