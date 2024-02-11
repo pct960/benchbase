@@ -359,22 +359,22 @@ public class AuctionMarkWorker extends Worker<AuctionMarkBenchmark> {
                 ret = executeNewBid(fastConn, (NewBid) proc);
                 break;
             case NewComment:
-                ret = executeNewComment(safeConn, (NewComment) proc);
+                ret = executeNewComment(fastConn, (NewComment) proc);
                 break;
             case NewCommentResponse:
-                ret = executeNewCommentResponse(safeConn, (NewCommentResponse) proc);
+                ret = executeNewCommentResponse(fastConn, (NewCommentResponse) proc);
                 break;
             case NewFeedback:
-                ret = executeNewFeedback(safeConn, (NewFeedback) proc);
+                ret = executeNewFeedback(fastConn, (NewFeedback) proc);
                 break;
             case NewItem:
-                ret = executeNewItem(safeConn, (NewItem) proc);
+                ret = executeNewItem(fastConn, (NewItem) proc);
                 break;
             case NewPurchase:
-                ret = executeNewPurchase(safeConn, (NewPurchase) proc);
+                ret = executeNewPurchase(fastConn, (NewPurchase) proc);
                 break;
             case UpdateItem:
-                ret = executeUpdateItem(safeConn, (UpdateItem) proc);
+                ret = executeUpdateItem(fastConn, (UpdateItem) proc);
                 break;
             default:
 

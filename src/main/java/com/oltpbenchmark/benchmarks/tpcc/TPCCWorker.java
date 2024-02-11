@@ -64,8 +64,15 @@ public class TPCCWorker extends Worker<TPCCBenchmark> {
     protected TransactionStatus executeWork(Connection safeConn, Connection fastConn, TransactionType nextTransaction) throws UserAbortException, SQLException {
         try {
             TPCCProcedure proc = (TPCCProcedure) this.getProcedure(nextTransaction.getProcedureClass());
-            proc.run(safeConn, gen, terminalWarehouseID, numWarehouses,
-                    terminalDistrictLowerID, terminalDistrictUpperID, this);
+
+	    String tName = nextTransaction.getName();
+
+	    //if(tName.equalsIgnoreCase("NewOrder"))
+	    //    proc.run(fastConn, gen, terminalWarehouseID, numWarehouses,
+	    //    	terminalDistrictLowerID, terminalDistrictUpperID, this);
+	    //else
+	    proc.run(safeConn, gen, terminalWarehouseID, numWarehouses,
+		    terminalDistrictLowerID, terminalDistrictUpperID, this);
         } catch (ClassCastException ex) {
             //fail gracefully
             LOG.error("We have been invoked with an INVALID transactionType?!", ex);
