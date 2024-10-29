@@ -67,11 +67,11 @@ public class TPCCWorker extends Worker<TPCCBenchmark> {
 
 	    String tName = nextTransaction.getName();
 
-	    //if(tName.equalsIgnoreCase("NewOrder"))
-	    //    proc.run(fastConn, gen, terminalWarehouseID, numWarehouses,
-	    //    	terminalDistrictLowerID, terminalDistrictUpperID, this);
-	    //else
-	    proc.run(safeConn, gen, terminalWarehouseID, numWarehouses,
+	    if(tName.equalsIgnoreCase("NewOrder"))
+	        proc.run(fastConn, gen, terminalWarehouseID, numWarehouses,
+	        	terminalDistrictLowerID, terminalDistrictUpperID, this);
+	    else
+		proc.run(safeConn, gen, terminalWarehouseID, numWarehouses,
 		    terminalDistrictLowerID, terminalDistrictUpperID, this);
         } catch (ClassCastException ex) {
             //fail gracefully

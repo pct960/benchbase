@@ -1,0 +1,22 @@
+{
+ "scalefactor": "10",
+ "Current Timestamp (milliseconds)": 1729216679937,
+ "Benchmark Type": "tpcc",
+ "isolation": "TRANSACTION_SERIALIZABLE",
+ "DBMS Version": null,
+ "Goodput (requests/second)": 297.90011866295856,
+ "terminals": "100",
+ "DBMS Type": "POSTGRES",
+ "Latency Distribution": {
+  "95th Percentile Latency (microseconds)": 12359,
+  "Maximum Latency (microseconds)": 1145244,
+  "Median Latency (microseconds)": 5162,
+  "Minimum Latency (microseconds)": 590,
+  "25th Percentile Latency (microseconds)": 4160,
+  "90th Percentile Latency (microseconds)": 9819,
+  "99th Percentile Latency (microseconds)": 57273,
+  "75th Percentile Latency (microseconds)": 6943,
+  "Average Latency (microseconds)": 8644
+ },
+ "Throughput (requests/second)": 299.99844109260073
+}

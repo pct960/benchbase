@@ -1,0 +1,22 @@
+{
+ "scalefactor": "1",
+ "Current Timestamp (milliseconds)": 1687745151389,
+ "Benchmark Type": "auctionmark",
+ "isolation": "TRANSACTION_SERIALIZABLE",
+ "DBMS Version": null,
+ "Goodput (requests/second)": 285.73215039270633,
+ "terminals": "1",
+ "DBMS Type": "POSTGRES",
+ "Latency Distribution": {
+  "95th Percentile Latency (microseconds)": 17732,
+  "Maximum Latency (microseconds)": 21749,
+  "Median Latency (microseconds)": 612,
+  "Minimum Latency (microseconds)": 0,
+  "25th Percentile Latency (microseconds)": 561,
+  "90th Percentile Latency (microseconds)": 17454,
+  "99th Percentile Latency (microseconds)": 18460,
+  "75th Percentile Latency (microseconds)": 1562,
+  "Average Latency (microseconds)": 3276
+ },
+ "Throughput (requests/second)": 304.9820706973946
+}
